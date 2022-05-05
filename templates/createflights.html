@@ -1,0 +1,88 @@
+<!DOCTYPE html>    
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="This is the homepage for Airline Workers">
+    <title>Flight Creation.</title>
+
+</head>
+<body>
+    <h1>Flight Creation</h1>
+    <form action="/CreateFlight" method="POST">
+        <fieldset>
+            <legend>Create Flight</legend>
+            <input type="text" Name = "flight_num" placeholder = "Flight Number"/>
+            <input type="text" Name = "airline_name" placeholder = "Airline Name"/>
+            <label for="start">Depart Date:</label>
+            <br/>
+            <br/>
+            <input type="date" id="depart"/>
+            <label for="start">Arrival Date:</label>
+            <br/>
+            <br/>
+            <input type="date" id="arrive"/>
+            <input type="text" Name = "base_price" placeholder = "Base Price"/>
+            <input type="text" Name = "Status" placeholder = "Status Of Flight"/>
+            <input type="text" Name = "depart_airport_code" placeholder = "Depart Airport Code"/>
+            <input type="text" Name = "arrive_airport_code" placeholder = "Arrive Airport Code"/>
+            <br/>
+            <input type="submit">
+        </fieldset>
+    </form>
+<hr/>
+<hr/>
+<br>
+<br>
+<br>
+
+    <h1>Add Airport</h1>
+    <form action="/AddAirport", method="POST">
+    <fieldset>
+        <legend>Add Airport</legend>
+        <input type="text" Name="code" placeholder = "Airport Code"/>
+        <input type="text" Name="city" placeholder = "City"/>
+        <input type="text" Name="country" placeholder = "Country"/>
+        <input type="text" Name="airport_type" placeholder = "Airport Type"/>
+
+        <br/>
+        <input type="submit">
+    </fieldset>
+    </form>
+    <hr/>
+    <hr/>
+    <br>
+    <br>
+    <br>
+
+    <h1>Add Airplane</h1>
+    <form action="/AddAirplane", method="POST">
+        <fieldset>
+            <legend>Add Airplane</legend>
+            <input type="number" Name="ID" placeholder = "Airplane ID"/>
+            <input type="number" Name="num_of_seats" placeholder = "Number Of Seats"/>
+            <input type="text" Name="airline_name" placeholder = "Airline Name"/>
+            <input type="text" Name="manufacturing_comp" placeholder = "Manufacturing Company"/>
+            <input type="text" Name="age_of_airplane" placeholder = "Age Of Airplane"/>
+
+            <br/>
+            <input type="submit">
+            </fieldset> 
+    <hr/>
+    <hr/>
+    <br>
+    <br>
+    <br>
+    <h1>Airports owned by your airline:</h1>
+    <table>
+        <th>ID</th>
+        <th>Seats</th>
+    {% for line in planes %}
+        <tr>
+            <td>{{line['ID']}}</td>
+            <td>{{line['seats']}}</td>
+        </tr>
+    {% endfor %}
+    </form>
+</body>
+</html>
+    
