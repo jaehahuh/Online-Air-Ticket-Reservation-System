@@ -1,0 +1,121 @@
+<html>
+<head>
+
+<h1> Flight History </h1>
+
+</head>
+ <body>
+
+<a href="/custo_home">Cusmoter Home</a>
+<a href="/rating">Ratings</a>
+<a href="/logout">Logout</a>
+
+ 
+<style>
+	body { 
+	background-color: lightblue; 
+	}
+   
+	table, th, td{
+		border: 1px solid black;
+	}
+    .container
+    {
+		overflow: hidden;
+		width:150px;
+    }
+    .text
+    {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        display: block; 
+    }
+</style>
+
+<div style='clear: both'>
+    <h3 style='float: left'>total amount of money spent in the past yea</h3>
+    <h3 style='float: right'>${{year_spent}}</h3>
+</div>
+<br>
+<br>
+</br>
+
+<table>
+	<th>Month</th>
+	<th>Spent</th>
+
+{% for month in past_six_month %}
+	<tr>
+		<td>{{month}}</td>
+		<td>${{past_six_month[month]}}</td>
+	</tr>
+{% endfor %}
+</table>
+
+
+<form action="/history_by_range" method='POST'>
+    <h4>Search by Date</h4>
+    <label for='start_date'>Start Date</label>
+    <input type='date' name='start_date' required/></br>
+    <label for='end_date'>End Date</label>
+    <input type='date' name='end_date' required/></br>
+    <input type=submit = id='historydate' value='Submit'/>
+</form>
+
+{% if error %}
+    <p class="error"><strong>Error:</strong><{{error}}</p>
+{% endif%}
+
+<div style='clear: both'>
+    <h2 style='float: left'>Money spent between {{start_month}} and {{end_month}}</h2>
+    <h2 style='float: right'>${{total_spent_interval}}</h2>
+</div>
+<br>
+<br>
+<br>
+</br>
+
+
+<table>
+    <th>Purchase Date</th>
+    <th>Ticket ID</th>
+    <th>Price</th>
+
+    {% for line in history_date %}
+        <tr>
+            <td>{{line['date(purchase_date_time)']}}</td>
+            <td>{{line['ticket_id']}}</td>
+            <td>{{line['sold_price']}}</td>
+        </tr>
+    {% endfor %}
+</table>
+
+
+
+<h3>Past Flights</h3>
+<table>
+   <th>Airline Name</th>
+   <th>Flight Number</th>
+   <th>Depart Airport</th>
+   <th>Depart Date and Time</th>
+   <th>Arrive Airport</th>
+   <th>Arrive Date and Time</th>
+  
+{% for line in flight_history %}
+	<tr>
+		<td>{{line['airline_name']}}</td>
+		<td>{{line['flight_num']}}</td>
+		<td>{{line['depart_airport']}}</td>
+		<td>{{line['depart_date_time']}}</td>
+		<td>{{line['arrive_airport']}}</td>
+		<td>{{line['arrive_date_time']}}</td>
+	</tr>
+{% endfor %}
+</table>
+       
+
+</body>
+
+
+</html>
