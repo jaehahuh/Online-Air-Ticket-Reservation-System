@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<h1>Welcome to Online Reservation System</h1>
+</head>
+<body>
+{% if not message %}
+<a href="/login">Login</a>
+<a href="/register">Register</a>
+
+<style>
+	
+	body { 
+	background-color: white; 
+	}
+   
+	table, th, td{
+		border: 1px solid black;
+	}
+    .container
+    {
+		overflow: hidden;
+		width:150px;
+    }
+    .text
+    {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        display: block; 
+    }
+</style>
+
+
+
+<script>
+    function round() {
+		document.getElementById("return").innerHTML=
+			'<label for="date">Arrive Date</label>' 
+            '<type="date" input id ="date" name="return_date" required/></br>';
+	}
+</script>
+
+
+
+<form action="/public_view_info" method="POST">
+    <h3>Search flights</h3>
+	<input type="text" name = "depart" placeholder="Depart place" required/> </br>
+		<small>Source city/airport name</small></br>
+	<input type="text" name = "arrive" placeholder="Arrive place" required/> </br>
+	<small>Destination city/airport name</small></br>
+    <label for="date">Depart Date</label>
+    <input type='date' id='date' name="depart_date" required/></br>
+    <label for="roundtrip" style="padding: 10px 5px 0 0;">Round trip</label>
+    <input type='button' id='roundtrip' onclick='round()' style ="height:15px;width:15px;"></br>
+    <div id='return' value=return-date> </div>
+	<input type="submit" value ='Search'/>
+</form>
+
+</br>
+
+
+
+<table>
+   <th>Airline Name</th>
+   <th>Flight Number</th>
+   <th>Depart Airport</th>
+   <th>Depart Date and Time</th>
+   <th>Arrive Airport</th>
+   <th>Arrive Date and Time</th>
+   <th>Status</th>
+
+{% for line in public_flight_info %}
+	<tr>
+		<td>{{line['airline_name']}}</td>
+		<td>{{line['flight_num']}}</td>
+		<td>{{line['depart_airport']}}</td>
+		<td>{{line['depart_date_time']}}</td>
+		<td>{{line['arrive_airport']}}</td>
+		<td>{{line['arrive_date_time']}}</td>
+		<td>{{line['status']}}</td>
+    </tr>
+{% endfor %}
+</table>
+
+
+{% endif %}
+
+
+
+
+</body>
+
+</html>
