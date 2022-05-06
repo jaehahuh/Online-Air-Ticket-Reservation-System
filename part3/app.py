@@ -31,7 +31,6 @@ def register():
     return render_template('register.html')
 
 
-
 #Authenticates the register
 @app.route('/registerAuth', methods=['GET', 'POST'])
 def registerAuth():
@@ -81,7 +80,7 @@ def registerAuth():
         #if new staff
         
         airline_name = request.form['airline_name']
-        query = 'SELECT * FROM airline WHERE name = %s'
+        query = 'SELECT * FROM airline WHERE airline_name = %s'
         cursor.execute(query, (airline_name))
         
         if not cursor.fetchone():
@@ -93,17 +92,18 @@ def registerAuth():
         date_of_birth = request.form['date_of_birth']
         phone_nums = request.form['phone_nums'].split(', ')
         
-        inst  = 'INSERT into airline_staff values (%s, md5(%s), %s, %s, %s)'
+        inst = 'INSERT into airline_staff values (%s, md5(%s), %s, %s, %s)'
         cursor.execute(inst, (username, password, first_name, last_name, date_of_birth))
 
         for number in phone_nums:
-            ins  = 'INSERT into staff_phone_num values (%s, %s)'
+            ins = 'INSERT into staff_phone_num values (%s, %s)'
             cursor.execute(inst, (username, number))
             
     conn.commit()
     cursor.close()
     
     return render_template('index.html')
+
 
 
 #View public info
@@ -113,24 +113,32 @@ def searchPublicView():
     dept = request.form['depart']
     arri = request.form['arrive']
     depart_date = request.form['depart_date']
-    query = 'SELECT distinct f.airline_name, f.flight_num, de.airport_name as depart_airport, depart_date_time, ar.airport_name as arrive_airport, arrive_date_time, f.status '
-    query +='FROM flight f, airport de, airport ar'
-    query +='WHERE ((f.depart_airport_code = de.code AND f.arrive_airport_code = ar.code) AND  ("{}" = de.city or "{}" = de.airport_name)'.format(dept, dept)
-    query +='AND "{}" = ar.city or "{}" = ar.airport_name)'.format(arri, arri)
-    query +='AND ("{}" = date(f.depart_date_time))'.format(depart_date)
-    query +='ORDER BY f.depart_date_time)'
+    
+    
+    query = 'SELECT distinct f.airline_name, f.flight_num, de.airport_name as depart_airport, \
+    f.depart_date_time, ar.airport_name as arrive_airport, f.arrive_date_time, f.status \
+    FROM flight f, airport de, airport ar \
+    WHERE f.depart_airport_code = de.code AND f.arrive_airport_code = ar.code \
+    AND depart_airport = %s AND arrive_airport = %s AND DATE(f.depart_date_time) = %s AND DATE(f.depart_date_time) >= CURRENT_TIMESTAMP\
+    ORDER BY f.depart_date_time)'
+
     if "return_date" in request.form:
         return_date = request.form['return_date']
-        query += 'OR ((f.depart_airport_code = de.code AND f.arrive_airport_code = ar.code) AND ("{}" = de.city or "{}" = de.airport_name)'.format(dept, dept)
-        query += ' AND "{}" = ar.city or "{}" = ar.airport_name)'.format(arri, arri)
-        query += 'AND ("{}" = date(f.depart_date_time))'.format(return_date)
-        query += 'ORDER BY f.depart_date_time)'
+        query =  'SELECT distinct f.airline_name, f.flight_num, de.airport_name as depart_airport, \
+        f.depart_date_time, ar.airport_name as arrive_airport, f.arrive_date_time, f.status \
+        FROM flight f, airport de, airport ar \
+        WHERE f.depart_airport_code = de.code AND f.arrive_airport_code = ar.code \
+        AND depart_airport = %s AND arrive_airport = %s AND return_date = %s AND return_date>= CURRENT_TIMESTAMP\
+        ORDER BY f.depart_date_time)'
+    
     cursor.execute(query)
     conn.commit()
     data1 = cursor.fetchall()
+    for each in data1:
+        print(each)
 
     cursor.close()
-    return render_template('home.html', public_flight_info=data1)
+    return render_template('index.html', public_flight_info=data1)
 
 
 #Define route for customer home
@@ -151,18 +159,20 @@ def search_flights_customer():
     dept = request.form['depart']
     arri = request.form['arrive']
     depart_date = request.form['depart_date']
-    query = 'SELECT distinct f.airline_name, f.flight_num, de.airport_name as depart_airport, depart_date_time, ar.airport_name as arrive_airport, arrive_date_time, f.base_price'
-    query += 'FROM flight f, airport de, airport ar'
-    query += 'WHERE ((f.depart_airport_code = de.code AND f.arrive_airport_code = ar.code) AND  ("{}" = de.city or "{}" = de.airport_name)'.format(dept, dept)
-    query += ' AND "{}" = ar.city or "{}" = ar.airport_name)'.format(arri, arri)
-    query += 'AND ("{}" = date(f.depart_date_time))'.format(depart_date)
-    query += 'ORDER BY f.depart_date_time)'
+    query = 'SELECT distinct f.airline_name, f.flight_num, de.airport_name as depart_airport, \
+    f.depart_date_time, ar.airport_name as arrive_airport, f.arrive_date_time, f.base_price\
+    FROM flight f, airport de, airport ar \
+    WHERE f.depart_airport_code = de.code AND f.arrive_airport_code = ar.code \
+    AND depart_airport = %s AND arrive_airport = %s AND DATE(f.depart_date_time) = %s AND DATE(f.depart_date_time) >= CURRENT_TIMESTAMP\
+    ORDER BY f.depart_date_time)'
     if "return_date" in request.form:
         return_date = request.form['return_date']
-        query += 'OR ((f.depart_airport_code = de.code AND f.arrive_airport_code = ar.code) AND ("{}" = de.city or "{}" = de.airport_name)'.format(dept, dept)
-        query += ' AND "{}" = ar.city or "{}" = ar.airport_name)'.format(arri, arri)
-        query += 'AND ("{}" = date(f.depart_date_time))'.format(return_date)
-        query += 'ORDER BY f.depart_date_time)'
+        query =  'SELECT distinct f.airline_name, f.flight_num, de.airport_name as depart_airport, \
+        f.depart_date_time, ar.airport_name as arrive_airport, f.arrive_date_time, f.base_price \
+        FROM flight f, airport de, airport ar \
+        WHERE f.depart_airport_code = de.code AND f.arrive_airport_code = ar.code \
+        AND depart_airport = %s AND arrive_airport = %s AND return_date = %s AND return_date>= CURRENT_TIMESTAMP\
+        ORDER BY f.depart_date_time)'
     cursor.execute(query)
     conn.commit()
     data1 = cursor.fetchall()
@@ -300,10 +310,10 @@ def history():
             past_six_month[month] = total_spent_month
 
     #History of Past flights
-    query = 'SELECT DISTINCT f.airline_name, f.flight_num, de.airport_name as depart_airport, f.depart_date_time, ar.airport_name as arrive_airport, f.arrive_date_time'
-    query += 'FROM flight f, airport de, airport ar, (purchase p NATURAL JOIN ticket t)'
-    query += 'WHERE (f.depart_airport_code = de.code AND f.arrive_airport_code = ar.code) AND p.ticket_id = t.ticket_id AND t.flight_num = f.flight_num AND p.email = %s'
-    query += 'ORDER BY f.depart_date_time'
+    query = 'SELECT DISTINCT f.airline_name, f.flight_num, de.airport_name as depart_airport, f.depart_date_time, ar.airport_name as arrive_airport, f.arrive_date_time \
+            FROM flight f, airport de, airport ar, (purchase p NATURAL JOIN ticket t) \
+            WHERE (f.depart_airport_code = de.code AND f.arrive_airport_code = ar.code) AND p.ticket_id = t.ticket_id AND t.flight_num = f.flight_num AND p.email = %s \
+            ORDER BY f.depart_date_time'
     cursor.execute(query, (username))
     flights_history = cursor.fetchall()
     return render_template('custo_history.html', year_spent=year_spent, past_six_month=past_six_month, flights_history = flights_history)
@@ -327,8 +337,8 @@ def historyByRange():
     cursor.execute(query, (username, start_date, end_date))
     total_spent = cursor.fetchone()['sum(sold_price)']
     
-    query = 'SELECT date(purchase_date_time), ticket_id, sold_price as sale_price From ticket NATURAL JOIN purchase'
-    query += 'WHERE email = %s and date(purchase_date_time) between date(%s) and date(%s)'
+    query = 'SELECT date(purchase_date_time), ticket_id, sold_price as sale_price From ticket NATURAL JOIN purchase \
+                WHERE email = %s and date(purchase_date_time) between date(%s) and date(%s)'
     cursor.execute(query, (username, start_date, end_date))
     history_date = cursor.fetchall()
     for line in history_date:
