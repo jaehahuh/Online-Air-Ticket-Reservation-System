@@ -12,10 +12,10 @@
         </br>
         </br> 
         <table>
-            <th>City</th>
+            <th>Destination Airport</th>
         {% for line in past_three_months %}
             <tr>
-                <td>{{line['city']}}</td>
+                <td>{{line['arrive_airport_code']}}</td>
             </tr>
         {% endfor %}
         </table>
@@ -23,10 +23,10 @@
         <br>
         <h4>Top Destinations Over Last Year</h1> 
         <table>
-            <th>City</th>
+            <th>Destination Airport</th>
         {% for line in past_year %}
             <tr>
-                <td>{{line['city']}}</td>
+                <td>{{line['arrive_airport_code']}}</td>
             </tr>
         {% endfor %}
         </table>
