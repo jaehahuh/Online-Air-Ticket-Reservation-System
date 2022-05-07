@@ -1,0 +1,96 @@
+<html>
+<head>
+<h1>Rating and Comments</h1>
+</head>
+
+<body>
+
+<a href="/custo_home">Cusmoter Home</a>
+<a href="/history">History</a>
+<a href="/logout">Logout</a>
+
+<form action="/rating" name='rating' id='rating'>
+</form>
+
+
+<style>
+	body{ 
+	background-color: white; 
+	}
+	
+	table, th, td{
+		border: 1px solid black;
+	}
+	 .container
+    {
+		overflow: hidden;
+		width:150px;
+    }
+    .text
+    {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        display: block; 
+    }
+
+</style>
+
+
+<script>
+    function submitform(){
+        document.forms["rating"].submit();
+    }
+</script>
+
+<h3>Past Rating and Comment</h3>
+<table>
+	<th>Airline Name</th>
+	<th>Flight Number</th>
+	<th>Departed datetime</th>
+	<th>Ratings</th>
+	<th>Comments</th>
+
+{% for line in rates %}
+	<tr>
+		<td>{{line['airline_name']}}</td>
+		<td>{{line['flight_num']}}</td>
+		<td>{{line['depart_date_time']}}</td>
+		<td>{{line['ratings']}}</td>
+		<td>{{line['comments']}}</td>
+	</tr>
+{% endfor %}
+
+</table>
+
+</br>
+
+<h3>New Review</h3>
+
+{% if error %}
+	<p class="error"><strong>Error:</strong> {{error}}</p>
+{% endif %}
+
+<form action='/newRating' method='POST'>
+	<input type='text' name='airline_name' placeholder='Airline Name' ></br>
+	<input type='text' name='flight_num' placeholder='Flight Number' ></br>
+	<label for="depart_date_time">Depart date and time</label></br>
+    <input type="date" id="depart_date_time" name="depart_date_time" required/></br>
+    <label for='rating'>Rating</label></br>
+    <select name='rating' required>
+        <option value='default'> -- Select Rating (stars 0~5) -- </option>
+        <option value='0'>0</option>
+        <option value='1'>1</option>
+        <option value='2'>2</option>
+        <option value='3'>3</option>
+        <option value='4'>4</option>
+        <option value='5'>5</option>
+    </select></br>
+    <label for='comment'>Comment</label></br>
+    <textarea name='comment' placeholder='Write comments (500 characters MAX)' rows="10" cols="50" required></textarea></br>
+    <input type='submit' value='Submit'/>
+</form>
+
+
+</body>
+</html>

@@ -1,0 +1,96 @@
+<html>
+<head><h2>Register Information</h2></head> </br>
+<body>
+
+<h5>Please choose type of user<h5>
+<select name='user_type'id='user_type' >
+	<option value=''>User Type</option>
+	<option value='custo'>Customer</option>
+	<option value='staff'>Staff</option>
+</select>
+
+</br>
+<input type="button" value = Next onclick='user_type_info()'/>
+
+</br>
+</br>
+<style>
+    body { background-color: lightblue; }
+</style>
+
+<div id="custo_info" value="custo_info"></div>
+
+<div id="staff_info" value="staff_info"></div>
+<script>
+	function user_type_info() {
+			var user_info = document.getElementById("user_type");
+			var user_type = user_info.options[user_info.selectedIndex].value;
+			if (user_type == "custo") {
+					document.getElementById('custo_info').innerHTML = 
+						'<form action="/registerAuth" method="POST">'
+							+ '<input type="hidden" id="user_type" name="user_type" value="' + user_type + '"'
+							
+							+ '<h5>Personal Info</h5></br>'
+							+ '<input type="email" name = "username" placeholder = "Email" required/> </br>'
+							+ '<input type="password" name = "password" placeholder ="Password" required/></br>'
+							+ '<input type="text" name="name" placeholder = "Full Name" required/></br></br>'	
+							
+							
+							+ '<h7>Address Info</h7></br>'
+							+ '<input type="text" name="addr_building_num" placeholder="Building Number" required/></br>'
+							+ '<input type="text" name="addr_street" placeholder="Address Street" required/></br>'	
+							+ '<input type="text" name="addr_city" placeholder="City" required/></br>'	
+							+ '<input type="text" name="addr_state" placeholder="State" required/></br>'	
+							+ '<small>Example: NY </small></br></br>'
+							
+							+ '<input type="text" name="phone_num" placeholder="Phone Number" " required/></br></nr>'	
+							+ '<small>Example: 111-222-3333</small></br></br>'
+							
+							+ '<h7>Passport Information</h7></br>'
+							+ '<input type="text" name="passport_num" placeholder="Passport Number" required/></br>'
+							+ '<label for="passport_exp">Expiration Date</label></br>'
+							+ '<input type="date" id="passport_exp" name="passport_exp" required/></br>'
+							+ '<input type="text" name="passport_country" placeholder="Passport Country" required/></br>'	
+							
+							+ '<label for="date_of_birth">Date of Birth</label></br>'
+							+ '<input id="date_of_birth" name="date_of_birth" type="date" required/></br>'
+						+ '<input type="submit" id="add_custo_info" value="Submit"/>'
+						
+						+'	{% if error %}'
+							+ '<p class="error"><strong>Error:</strong> {{error}}</p>'
+						+ '{% endif %}'
+						+ '</form>';
+
+				}
+			else if (user_type == "staff") {
+				document.getElementById('staff_info').innerHTML = 
+						'<form action="/registerAuth" method="POST">'
+							+ '<input type="hidden" id="user_type" name="user_type" value="' + user_type + '"'
+							
+							+ '<h5>Personal Info</h5></br>'
+							+ '<input type="email" name = "username" placeholder = "Email Address" required/> </br>'
+							+ '<input type="text" name = "airline_name" placeholder = "Airline Name" required/></br>'
+							+ '<input type="password" name = "password" placeholder = "Password" required/></br>'
+							+ '<input type="text" name="first_name" placeholder = "First Name" required/></br>'	
+							+ '<input type="text" name="last_name" placeholder = "Last Name" required/></br>'	
+							+ '<input type="text" multiple name="phone_nums" placeholder="Phone Numbers" required/></br>'
+							+ '<small>Example: 111-222-3333</small><br>'
+							+ '<small>Example(if you have multiple phone_num): 111-222-3333, 222-333-5555, 333-555-7777</small></br></br>'
+                
+							+ '<label for="date_of_birth">Date of Birth</label></br>'
+							+ '<input type="date" id="date_of_birth" name="date_of_birth" required/></br>'
+						+ '<input type="submit" id="add_staff_info" value="Submit"/>'
+						
+						+ '	{% if error %}'
+							+ '<p class="error"><strong>Error:</strong> {{error}}</p>'
+						+ '{% endif %}'
+						+ '</form>';
+						
+			}
+	}
+</script>
+
+
+<a href="/">back</a>
+</body>
+</html>
