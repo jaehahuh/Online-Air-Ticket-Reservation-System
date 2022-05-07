@@ -21,33 +21,5 @@
             <input type="submit">
         </fieldset>
     </form>
-    <h1>New Airline:</h1>
-    <table>
-        <th>Airline ID</th>
-        <th>Airline Name</th>
-        <th>Number of Seats</th>
-        <th>Manufacturing Company</th>
-        <th>Airplane Age in Years</th>
-    {% for line in data %}
-        <tr>
-            <td>{{line['ID']}}</td>
-            <td>{{line['airline_name']}}</td>
-            <td>{{line['num_of_seats']}}</td>
-            <td>{{line['manufacturing_comp']}}</td>
-            <td>{{line['age_of_airplane']}}</td>
-            <td>{{line['airport_type']}}</td>
-        </tr>
-    {% endfor %}
-
-    <h1>Airplanes owned by your airline:</h1>
-    <table>
-        <th>Airplane ID</th>
-        <th>Airline Name</th>
-    {% for line in airports %}
-        <tr>
-            <td>{{line['id']}}</td>
-            <td>{{line['airline_name']}}</td>
-        </tr>
-    {% endfor %}
 </body>
 </html>

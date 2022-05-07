@@ -1,0 +1,25 @@
+<!DOCTYPE html>    
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="This is the homepage for Airline Workers">
+    <title>View Top Destinations</title>
+
+</head>
+<body>
+    <h1>Top Destinations Over Last 3 Months</h1> 
+    <form action="/ViewTopDestinations" method="post">
+        </br>
+        </br> 
+        <table>
+            <th>City</th>
+        {% for line in planes %}
+            <tr>
+                <td>{{line['city']}}</td>
+            </tr>
+        {% endfor %}
+        </table>
+        
+    </form>
+ </body>
+ </html>

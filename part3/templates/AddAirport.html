@@ -21,21 +21,5 @@
             <input type="submit" value="Add An Airport"/>
         </fieldset>
     </form>
-    <h1>New Airport:</h1>
-    <table>
-        <th>Airport Name</th>
-        <th>Airport Code</th>
-        <th>City</th>
-        <th>Country</th>
-        <th>Airport Type</th>
-    {% for line in data %}
-        <tr>
-            <td>{{line['airport_name']}}</td>
-            <td>{{line['code']}}</td>
-            <td>{{line['city']}}</td>
-            <td>{{line['country']}}</td>
-            <td>{{line['airport_type']}}</td>
-        </tr>
-    {% endfor %}
 </body>
 </html>

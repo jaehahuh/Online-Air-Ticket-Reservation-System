@@ -14,9 +14,23 @@ table, th, td{
 <body>
     <h1>View Earned Revenue</h1>
     <table style="width:100%">
+        <th>Last Month Sales</th>
+    {% for line in past_month %}
         <tr>
-            <th>Last Month Sales</th>
-            <th>Last Year Sales</th>
+            <td>{{line['rev']}}</td>
         </tr>
+    {% endfor %}
     </table>
-    <form action="/ViewEarnedRevenue" method="POST">
+
+    <table style="width:100%">
+        <th>Last Year Sales</th>
+    {% for line in past_year %}
+        <tr>
+            <td>{{line['rev']}}</td>
+        </tr>
+    {% endfor %}
+    </table>
+    <br><a href = "/StaffHome"><button>Back to Home</button></a>
+
+    </body>
+    </html>
