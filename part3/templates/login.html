@@ -79,13 +79,15 @@ a{
         </style>
         
         <div id="custo_info" value="custo_info"></div>
+        <div id="staff_info" value="staff_info"></div>
+
         <script>
             function user_type_info() {
                     var user_info = document.getElementById("user_type");
                     var user_type = user_info.options[user_info.selectedIndex].value;
                     if (user_type == "custo") {
                             document.getElementById('custo_info').innerHTML = 
-                                '<form action="/StaffloginAuth" method="POST">'
+                                '<form action="/CustomerloginAuth" method="POST">'
                                     + '<input type="hidden" id="user_type" name="user_type" value="' + user_type + '"'
                                     
                                     + '<h5>Enter Username and Password</h5></br>'
@@ -98,7 +100,7 @@ a{
 						        + '</form>';
                         }
                     else if (user_type == "staff") {
-                        document.getElementById('custo_info').innerHTML = 
+                        document.getElementById('staff_info').innerHTML = 
                             '<form action="/StaffloginAuth" method="POST">'
                                 + '<input type="hidden" id="user_type" name="user_type" value="' + user_type + '"'
                                 
