@@ -471,12 +471,76 @@ def StaffFlightView():
 		query = "SELECT * from flight where airline_name = %s AND depart_date_time >= DATE_SUB(NOW(), INTERVAL 1 MONTH);"
 		cursor.execute(query, request.form['airline_name'])
 		data = cursor.fetchall()
+		depart = "SELECT count(c.email) as customers, p.email, t.ticket_id, p.ticket_id, t.flight_num,\
+		 f.flight_num, f.depart_airport_code from customer c join ticket t join flight f \
+		 join purchase p where t.ticket_id = p.ticket_id AND c.email = p.email and f.flight_num =\
+		  t.flight_num and depart_airport_code = 'SFO' and f.flight_num = %s"
+		cursor.execute(depart,request.form['depart_airport_code'], request.form['flight_num'])
+		departing = cursor.fetchall()
+		arrive = "SELECT count(c.email) as customers, p.email, t.ticket_id, p.ticket_id, t.flight_num,\
+		 f.flight_num, f.arrive_airport_code from customer c join ticket t join flight f \
+		 join purchase p where t.ticket_id = p.ticket_id AND c.email = p.email and f.flight_num =\
+		  t.flight_num and arrive_airport_code = %s and f.flight_num = %s"
+		cursor.execute(arrive, request.form['arrive_airport_code'], request.form['flight_num'])
+		arrival = cursor.fetchall()
+		cursor.close()
 		if data:
 			return render_template('ViewFlights.html', data=data)
 		else:
 			print("Error!")
 	else:
 		return redirect('/logout')
+
+@app.route('/DepartingCustomersPointer')
+def DepartingCustomerPointer():
+	if confirmstaff():
+		return render_template("DepartingCustomers.html")
+	return redirect('/logout')
+
+@app.route('/DepartingCustomers', methods=["get", "post"])
+def DepartingCustomers():
+	if confirmstaff():
+		cursor = conn.cursor()
+		depart = "SELECT count(c.email) as customers, p.email, t.ticket_id, p.ticket_id, t.flight_num,\
+		 f.flight_num, f.depart_airport_code from customer c join ticket t join flight f \
+		 join purchase p where t.ticket_id = p.ticket_id AND c.email = p.email and f.flight_num =\
+		  t.flight_num and depart_airport_code = %s and f.flight_num = %s"
+		cursor.execute(depart, (request.form['depart_airport_code'], request.form['flight_num']))
+		departing = cursor.fetchall()
+		cursor.close()
+		if depart:
+			return render_template('DepartingCustomers.html', departing=departing)
+		else:
+			print("Error!")
+	else:
+		return redirect('/logout')
+
+
+@app.route('/ArrivingCustomersPointer')
+def ArrivingCustomerPointer():
+	if confirmstaff():
+		return render_template("ArrivingCustomers.html")
+	return redirect('/logout')
+
+@app.route('/ArrivingCustomers', methods=["get", "post"])
+def ArrivingCustomers():
+	if confirmstaff():
+		cursor = conn.cursor()
+		arrive = "SELECT count(c.email) as customers, p.email, t.ticket_id, p.ticket_id, t.flight_num,\
+		 f.flight_num, f.arrive_airport_code from customer c join ticket t join flight f \
+		 join purchase p where t.ticket_id = p.ticket_id AND c.email = p.email and f.flight_num =\
+		  t.flight_num and arrive_airport_code = %s and f.flight_num = %s"
+		cursor.execute(arrive, (request.form['arrive_airport_code'], request.form['flight_num']))
+		arriving = cursor.fetchall()
+		cursor.close()
+		if arrive:
+			return render_template('ArrivingCustomers.html', arriving=arriving)
+		else:
+			print("Error!")
+	else:
+		return redirect('/logout')
+	
+
 
 
 @app.route('/GoToAirplane')
