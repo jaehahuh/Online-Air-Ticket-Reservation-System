@@ -577,12 +577,17 @@ def ViewRatings():
 def ViewFlightRatings():
 	if confirmstaff():
 		cursor = conn.cursor()
-		average = "SELECT avg(ratings) as rating, comments, flight_num, airline_name from rate natural \
+		average = "SELECT avg(ratings) as rating, flight_num, airline_name from rate natural \
 		join flight natural join customer where airline_name = %s AND flight_num = %s;"
 		cursor.execute(average, (request.form['airline_name'], request.form['flight_num']))
 		data = cursor.fetchall()
+		info = "select ratings, comments, airline_name, flight_num from rate natural join flight \
+		natural join customer where airline_name = %s and flight_num = %s"
+		cursor.execute(info, (request.form['airline_name'], request.form['flight_num']))
+		information = cursor.fetchall()
+		cursor.close()
 		if data:
-			return render_template('ViewFlightRatings.html', data=data)
+			return render_template('ViewFlightRatings.html', data=data, information = information)
 		else:
 			print("Error!")
 	else:
@@ -606,8 +611,6 @@ def ViewEarnedRevenue():
 		cursor.execute(year)
 		past_year = cursor.fetchall()
 		cursor.close()
-		print("PAST_MONTH", past_month)
-		print("PAST_YEAR", past_year)
 
 		return render_template('ViewEarnedRevenue.html', past_month = past_month, past_year = past_year)
 	else:
