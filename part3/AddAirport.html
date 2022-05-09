@@ -1,0 +1,27 @@
+<!DOCTYPE html>    
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="This is the homepage for Airline Workers">
+    <title>Add Airport</title>
+
+</head>
+<body>
+    <h1>Add Airport</h1>
+    <form action="/AddAirport", method="POST">
+        <fieldset>
+            <legend>Add Airport</legend>
+            <input type="text" Name="airport_name" placeholder = "Airport Name"/><br>
+            <input type="text" Name="code" placeholder = "Airport Code"/><br>
+            <input type="text" Name="city" placeholder = "City"/><br>
+            <input type="text" Name="country" placeholder = "Country"/><br>
+            <input type="text" Name="airport_type" placeholder = "Airport Type"/><br>
+
+            <br/>
+            <input type="submit" value="Add An Airport"/>
+        </fieldset>
+    </form>
+    <br><a href = "/StaffHome"><button>Back to Home</button></a>
+
+</body>
+</html>

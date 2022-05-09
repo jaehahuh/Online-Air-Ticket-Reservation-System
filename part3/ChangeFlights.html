@@ -1,0 +1,24 @@
+<!DOCTYPE html>   
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="This is the homepage for Airline Workers">
+    <title>Flight Status Change.</title>
+
+</head>
+<body>
+    <h1>Change Flight Status</h1>
+    <form action="/StaffChangeFlights" method="POST">
+        <fieldset>
+            <legend>Create Flight</legend>
+            <input type="text" name= "airline_name" placeholder = "Airline Name"/><br>
+            <input type="text" name= "flight_num" placeholder = "Flight Number"/><br>
+            <input type="text" name= "status" placeholder = "Status"/><br>
+            <br/>
+            <input type="submit">
+        </fieldset>
+    </form>
+    <br><a href = "/StaffHome"><button>Back to Home</button></a>
+
+</body>
+</html>
