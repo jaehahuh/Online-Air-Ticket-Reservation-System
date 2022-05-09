@@ -1,4 +1,4 @@
-    #Import Flask Library
+#Import Flask Library
 from ntpath import join
 from flask import Flask, render_template, request, session, url_for, redirect
 import pymysql.cursors
@@ -13,7 +13,7 @@ app = Flask(__name__)
 #Configure MySQL
 conn = pymysql.connect(host='localhost',
                        user='root',
-                       password='',
+                       password='root',
                        db='airport',
                        charset='utf8mb4',
                        cursorclass=pymysql.cursors.DictCursor)
@@ -355,24 +355,23 @@ def historyByRange():
 
 
 ###################################################################Login and staff #########################################################
-#Authenticates the login
 @app.route('/StaffloginAuth', methods=['GET', 'POST'])
 def loginAuthAirlineStaff():
-	print('we are here in staff login auth')
 	#grabs information from the forms
 	username = request.form['username']
 	password = request.form['password'] #might have to hash this passoword###############
 	
 
 	#cursor used to send queries
-	cursor = conn.cursor()
+	with conn.cursor() as cursor:
+	#cursor = conn.cursor()
 	#executes query
-	query = 'SELECT * FROM airline_staff WHERE username = %s and password = %s'
-	cursor.execute(query, (username, password))
-	#stores the results in a variable
-	data = cursor.fetchone()
+		query = 'SELECT * FROM airline_staff WHERE username = %s and password = %s'
+		cursor.execute(query, (username, password))
+		#stores the results in a variable
+		data = cursor.fetchone()
 	#use fetchall() if you are expecting more than 1 data row
-	cursor.close()
+
 	error = None
 	if(data):
 		#creates a session for the the user
@@ -380,6 +379,36 @@ def loginAuthAirlineStaff():
 		session['username'] = username
 		session['type'] = 'AirlineStaff' 
 		return render_template('StaffHome.html')
+		
+	else:
+		#returns an error message to the html page
+		error = 'Invalid login or username'
+		return render_template('login.html', error=error)
+
+@app.route('/CustomerloginAuth', methods=['GET', 'POST'])
+def loginAuthCustomer():
+	#grabs information from the forms
+	username = request.form['username']
+	password = request.form['password'] #might have to hash this passoword###############
+	
+
+	#cursor used to send queries
+	with conn.cursor() as cursor:
+	#cursor = conn.cursor()
+	#executes query
+		query = 'SELECT * FROM customer WHERE email = %s and password = %s'
+		cursor.execute(query, (username, password))
+		#stores the results in a variable
+		data = cursor.fetchone()
+	#use fetchall() if you are expecting more than 1 data row
+
+	error = None
+	if(data):
+		#creates a session for the the user
+		#session is a built in
+		session['username'] = username
+		session['type'] = 'Customer' 
+		return render_template('custo_home.html')
 		
 	else:
 		#returns an error message to the html page
@@ -405,66 +434,90 @@ def confirmstaff():
 			
 	return False
 
+@app.route('/GoToCreateFlights')
+def GoToCreateFlights():
+	if confirmstaff():
+		return render_template("createflights.html")
+	return redirect('/logout')
+
+
+
 #############################
 #Create New Flights
-@app.route('/StaffCreate')
+@app.route('/StaffCreate', methods = ['post'])
 def StaffCreate():
 	if confirmstaff():
 		cursor = conn.cursor()
-		query = "INSERT INTO flight VALUES (%s %s %s %s %s %s %s %s)"
-		cursor.execute(query, (request.form['flight_num'], request.form['airline_name'], 
-		request.form['depart_date_time'], request.form['arrive_date_time'], request.form['base_price'],
-		request.form['status'], request.form['depart_airport_code'], request.form['arrive_airport_code']))
-		query = "SELECT * FROM airplane WHERE airline_name = %s"
-		cursor.execute(query, request.form['airline_name'])
-		planes = cursor.fetchall()
-		return render_template("createflights.html", planes = planes)
+		query = "INSERT INTO flight VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
+		cursor.execute(query, (request.form['airline_name'], request.form['flight_num'], request.form['depart_date_time'], request.form['arrive_date_time'], request.form['base_price'],request.form['status'], request.form['depart_airport_code'], request.form['arrive_airport_code'], request.form['airplane_id']))
+		conn.commit()
+		cursor.close()
+		return redirect('/StaffHome')
 	else:
-		return redirect('/StaffHome') #After adding you can either logout or go home
+		return redirect('/logout') #After adding you can either logout or go home
+
+@app.route('/ViewFlights')
+def ViewFlights():
+	if confirmstaff():
+		return render_template("ViewFlights.html")
+	return redirect('/logout')
+
 
 
 @app.route('/StaffFlightView', methods = ['GET', 'POST'])
-def StaffFlightLayout():
+def StaffFlightView():
 	if confirmstaff():
-		"SELECT * from flight where depart_date_time >= {} AND depart_date_time <= {} AND airline_name = %s"
 		cursor = conn.cursor()
-		query = "SELECT airline_name, flight_num, depart_date_time, " \
-		"arrive_date_time, depart_airport_code, arrive_airport_code, base_price, status FROM flight, " \
-		"depart_airport_code AS leaving, arrive_airport_code AS arriving WHERE leaving.code = depart_airport_code " \
-		"AND arriving = arrive_airport_code AND depart_date_time >= {}" \
-		"AND depart_date_time <= {} AND airline_name = %s"
-		cursor.execute(query (request.form['airline_name'], request.form['flight_num'], request.form['depart_date_time'],
-		request.form['airrive_date_time'], request.form['depart_airport_code'], request.form['base_price'], request.form['status']))
+		query = "SELECT * from flight where airline_name = %s AND depart_date_time >= DATE_SUB(NOW(), INTERVAL 1 MONTH);"
+		cursor.execute(query, request.form['airline_name'])
 		data = cursor.fetchall()
+		if data:
+			return render_template('ViewFlights.html', data=data)
+		else:
+			print("Error!")
+	else:
+		return redirect('/logout')
+
+
+@app.route('/GoToAirplane')
+def GoToAirplane():
+	if confirmstaff():
+		return render_template("AddAirplane.html")
+	return redirect('/logout')
+
 
 @app.route('/AddAirplane', methods = ["GET", "POST"])
 def AddAirplane():
-	print("accessing add airplane")
 	if confirmstaff():
 		print('Our request.form looks like: ', request.form)
 		cursor = conn.cursor()
-		create = "INSERT into airplane VALUES (%s %s %s %s %s)"
-		cursor.execute(create, (request.form['id'], request.form['airline_name'], request.form['num_of_seats'], 
-		request.form['manufacturing_comp'], request.form['age_of_airplane']))
+		create = "INSERT into airplane VALUES (%s, %s, %s, %s, %s)"
+		cursor.execute(create, (request.form['id'], request.form['airline_name'], request.form['num_of_seats'], request.form['manufacturing_comp'], request.form['age_of_airplane']))
 		conn.commit() # python does not auto commit, therefore need to send commit after making changes 
 		cursor.close()
 		return redirect('/StaffHome')
 	else:
 		return redirect('/logout') #After adding you can either logout or go home to perform more actions.
 
+@app.route('/GoToAirport')
+def GoToAirport():
+	if confirmstaff():
+		return render_template("AddAirport.html")
+	return redirect('/logout')
+
 
 @app.route('/AddAirport', methods= ["GET", "POST"])
 def AddAirport():
 	if confirmstaff():
 		cursor = conn.cursor()
-		create = "INSERT into airport VALUES(%s %s %s %s %s)"
+		create = "INSERT into airport VALUES(%s, %s, %s, %s, %s)"
 		cursor.execute(create, (request.form['code'], request.form['airport_name'], request.form['city'],
 		request.form['country'], request.form['airport_type']))
 		conn.commit()
 		data = cursor.fetchall()
 		airports = "SELECT * FROM airport" 
 		cursor.close()
-		return redirect("/StaffHome", data = data, airports = airports)
+		return redirect("/StaffHome")
 	else:
 		return redirect('/logout') #After adding you can either logout or go home to perform more actions.
 
@@ -479,25 +532,30 @@ def AirlineStaffHome():
 	else:
 		return redirect('/logout')
 
-@app.route('/ViewFlights')
-def StaffFlightView():
-	if confirmstaff():
-		return render_template("ViewFlights.html")
-	return redirect('/logout')
 
+
+
+@app.route('/ChangeFlights')
+def ChangeFlights():
+	if confirmstaff():
+		return render_template("ChangeFlights.html")
+	return redirect('/logout')
 
 		#############################
 
 @app.route('/StaffChangeFlights', methods = ["GET", "POST"])
 def StaffChangeFlights():
+	print("Made POST Request: /StaffChangeFlights")
+	print(request.form)
 	if confirmstaff():
+		print(request.form)
 		cursor = conn.cursor()
 		query =  "SELECT * FROM flight WHERE airline_name = %s AND flight_num = %s"
 		cursor.execute(query, (request.form['airline_name'], request.form['flight_num']))
 		data = cursor.fetchall()
 		if data:
 			query = "UPDATE flight SET flight.status = %s WHERE airline_name = %s AND flight_num = %s"
-			cursor.execute(query, (request.form['flight_status'], request.form['airline_name'], request.form['flight_num']))
+			cursor.execute(query, (request.form['status'], request.form['airline_name'], request.form['flight_num']))
 			conn.commit()
 			cursor.close()
 			print("Successful Flight Status Change!")
@@ -509,80 +567,118 @@ def StaffChangeFlights():
 
 
 ########################################
-
+@app.route('/ViewRatings')
+def ViewRatings():
+	if confirmstaff():
+		return render_template("ViewFlightRatings.html")
+	return redirect('/logout')
 
 @app.route('/ViewFlightRatings', methods=["GET", "POST"])
 def ViewFlightRatings():
 	if confirmstaff():
 		cursor = conn.cursor()
-		average = "SELECT avg(ratings) as rating, comments, flight_num from rate natural"\
-		"join flight natural join customer where airline_name = %s group by flight_num;"
-
-		cursor.execute(average, (request.form['airline_name']))
+		average = "SELECT avg(ratings) as rating, comments, flight_num, airline_name from rate natural \
+		join flight natural join customer where airline_name = %s AND flight_num = %s;"
+		cursor.execute(average, (request.form['airline_name'], request.form['flight_num']))
 		data = cursor.fetchall()
 		if data:
-			return render_template('ViewFlightRatings.html', request.form['airline_name'], average=average)
+			return render_template('ViewFlightRatings.html', data=data)
 		else:
 			print("Error!")
 	else:
 		return redirect('/logout')
 
+
+
+
 @app.route('/ViewEarnedRevenue', methods=["get"])
 def ViewEarnedRevenue():
 	if confirmstaff():
 		cursor = conn.cursor()
-		month = "SELECT sum(sold_price) as rev, purchase_date_time from ticket NATURAL JOIN purchase WHERE"\
-		"purchase_date_time >= DATE_SUB(NOW(), INTERVAL 1 MONTH);"
+		month = "SELECT sum(sold_price) as rev, purchase_date_time \
+			     FROM purchase \
+			     WHERE purchase_date_time >= DATE_SUB(NOW(), INTERVAL 1 MONTH);"
 		cursor.execute(month)
-		past_month = cursor.fetchone()
-		year = "SELECT sum(sold_price) as rev, purchase_date_time from ticket NATURAL JOIN purchase WHERE"\
-		"purchase_date_time >= DATE_SUB(NOW(), INTERVAL 1 YEAR);"
+		past_month = cursor.fetchall()
+		year = "SELECT sum(sold_price) as rev, purchase_date_time \
+			    FROM purchase \
+				WHERE purchase_date_time >= DATE_SUB(NOW(), INTERVAL 1 YEAR);"
 		cursor.execute(year)
-		past_year = cursor.fetchone()
+		past_year = cursor.fetchall()
 		cursor.close()
+		print("PAST_MONTH", past_month)
+		print("PAST_YEAR", past_year)
+
 		return render_template('ViewEarnedRevenue.html', past_month = past_month, past_year = past_year)
 	else:
 		return redirect('/logout')
-
+'''
 @app.route('/ViewFrequentCustomers', methods=["get"])
 def ViewFrequentCustomers():
 	if confirmstaff():
 		f
-
+'''
 @app.route('/ViewTopDestinations', methods=["get"])
 def ViewTopDestinations():
 	if confirmstaff():
 		cursor = conn.cursor()
-		month = "SELECT arrival_airport_code, count(t.ticket_id) FROM purchase p JOIN ticket t ON f.flight_num = t.flight_num " \
-                "JOIN purchase p ON t.ticket_id = p.ticket_id AND p.purchase_date_time >= DATE_SUB(NOW(), INTERVAL 3 MONTH " \
-                "GROUP BY arrival_airport_code ORDER BY count(t.ticket_id) DESC LIMIT 3"
-		cursor.execute(month, request.form['purchase_date'])
+		month = "SELECT arrive_airport_code, count(t.ticket_id) FROM flight f JOIN ticket t ON f.flight_num = t.flight_num  \
+                JOIN purchase p ON t.ticket_id = p.ticket_id AND p.purchase_date_time >= DATE_SUB(NOW(), INTERVAL 3 MONTH)  \
+                GROUP BY arrive_airport_code ORDER BY count(t.ticket_id) DESC LIMIT 3"
+		cursor.execute(month)
 		past_three_months = cursor.fetchall()
-		year = "SELECT arrival_airport_code, count(t.ticket_id) FROM flight f JOIN ticket t ON f.flight_num = t.flight_num " \
-                "JOIN purchase p ON t.ticket_id = p.ticket_id AND p.purchase_date_time >= DATE_SUB(NOW(), INTERVAL 1 year " \
-                "GROUP BY arrival_airport_code ORDER BY count(t.ticket_id) DESC LIMIT 3"
-		cursor.execute(year, request.form['purchase_date'])
+		year = "SELECT arrive_airport_code, count(t.ticket_id) FROM flight f JOIN ticket t ON f.flight_num = t.flight_num \
+                JOIN purchase p ON t.ticket_id = p.ticket_id AND p.purchase_date_time >= DATE_SUB(NOW(), INTERVAL 1 year)  \
+                GROUP BY arrive_airport_code ORDER BY count(t.ticket_id) DESC LIMIT 3"
+		cursor.execute(year)
 		past_year = cursor.fetchall()
 		cursor.close()
 		return render_template('ViewTopDestinations.html', past_three_months = past_three_months, past_year = past_year)
 	else:
 		return redirect('/logout')
 
+@app.route('/ViewRevByTravelClassPoint')
+def ViewRevByTravelClassPoint():
+	if confirmstaff():
+		return render_template("TravelClass.html")
+	return redirect('/logout')
 
-'''
-@app.route('/ViewReportsByTravelClass', method="get")
+
+@app.route('/ViewRevByTravelClass', methods=["get", "post"])
 def ViewReportsByTravelClass():
 	if confirmstaff():
-		j
+		cursor = conn.cursor()
+		travel =  "SELECT sum(sold_price) as rev, travel_class FROM purchase join \
+		ticket where travel_class = %s;"
+		cursor.execute(travel, request.form['travel_class'])
+		revenue = cursor.fetchall()
+		if revenue:
+			return render_template('TravelClass.html', revenue=revenue)
+		else:
+			print("Error!")
+	else:
+		return redirect('/logout')
 
-@app.route('/ViewReports', method="get")
+		
+
+@app.route('/ViewReports', methods=["get"])
 def	ViewReports():
 	if confirmstaff():
 		cursor = conn.cursor()
-		query = "SELECT count(t.ticket_id) FROM flight f JOIN ticket t ON f.flight_num = t.flight_num " \
-                "JOIN purchase p ON t.ticket_id = p.ticket_id AND p.purchase_date >= %s"
-
-'''
+		month = "select count(t.ticket_id) from ticket t ,purchase p \
+		where t.ticket_id = p.ticket_id AND \
+		purchase_date_time >= DATE_SUB(NOW(), INTERVAL 1 MONTH);"
+		cursor.execute(month)
+		past_month = cursor.fetchall()
+		year = "select count(t.ticket_id) from ticket t ,purchase p \
+		where t.ticket_id = p.ticket_id AND \
+		purchase_date_time >= DATE_SUB(NOW(), INTERVAL 1 year);"
+		cursor.execute(year)
+		past_year = cursor.fetchall()
+		cursor.close()
+		return render_template('ViewReports.html', past_month = past_month, past_year = past_year)
+	else:
+		return redirect('/logout')
 
 @app.route('/logout')
 def logout():
