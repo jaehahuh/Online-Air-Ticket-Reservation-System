@@ -17,16 +17,18 @@ table, th, td{
         <th>Last Month Sales</th>
     {% for line in past_month %}
         <tr>
-            <td>{{line['rev']}}</td>
+            <td>Price:  ${{line['rev']}} - Date: {{line['purchase_date_time']}}</td>
         </tr>
     {% endfor %}
     </table>
-
+<br>
+<br>
+<br>
     <table style="width:100%">
         <th>Last Year Sales</th>
     {% for line in past_year %}
         <tr>
-            <td>{{line['rev']}}</td>
+            <td>Price:  ${{line['rev']}} - Date: {{line['purchase_date_time']}}</td>
         </tr>
     {% endfor %}
     </table>

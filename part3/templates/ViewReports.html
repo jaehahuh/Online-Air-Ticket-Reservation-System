@@ -1,6 +1,35 @@
-<!DOCTYPE html>
+<!DOCTYPE html>    
 <html>
-    <head>
-        <meta charset="UTF-8">
-        <meta name="description" content="This is the homepage for Airline Workers">
-        <title>View ReportsS</title>
+<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="This is the homepage for Airline Workers">
+    <title>View Top Destinations</title>
+
+</head>
+<body>
+    <h4>Reports</h1> 
+    <form action="/ViewReports" method="post">
+        </br>
+        </br> 
+        <table>
+            <th>Last Month Reports</th>
+        {% for line in past_month %}
+            <tr>
+                <td>{{line['count(t.ticket_id)']}} tickets sold</td>
+            </tr>
+        {% endfor %}
+        </table>
+        <br>
+        <br> 
+        <table>
+            <th>Last Year Reports</th>
+        {% for line in past_year %}
+            <tr>
+                <td>{{line['count(t.ticket_id)']}} tickets sold</td>
+            </tr>
+        {% endfor %}
+        </table>
+        
+    </form>
+ </body>
+ </html>

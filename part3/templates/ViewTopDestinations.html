@@ -7,26 +7,23 @@
 
 </head>
 <body>
-    <h4>Top Destinations Over Last 3 Months</h1> 
     <form action="/ViewTopDestinations" method="post">
-        </br>
-        </br> 
         <table>
+            Top Destinations Over Last 3 Months
             <th>Destination Airport</th>
         {% for line in past_three_months %}
             <tr>
-                <td>{{line['arrive_airport_code']}}</td>
+                <td>{{line['arrive_airport_code']}}</td><br>
             </tr>
         {% endfor %}
         </table>
         <br>
-        <br>
-        <h4>Top Destinations Over Last Year</h1> 
         <table>
+            Top Destinations Over Last Year
             <th>Destination Airport</th>
         {% for line in past_year %}
             <tr>
-                <td>{{line['arrive_airport_code']}}</td>
+                <td>{{line['arrive_airport_code']}}</td><br>
             </tr>
         {% endfor %}
         </table>

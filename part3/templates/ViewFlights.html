@@ -10,15 +10,50 @@
        Enter dates of flights you wish to see
        </br>
        </br> 
-       <input type = "date" name = "depart_date_time" placeholder = "Day of Departure"/><br>
-       <input type = "date" name = "arrive_date_time" placeholder = "Day of Return"/><br>
        <input type = "text" name = "airline_name" placeholder = "Airline Name"/><br>
-       <input type = "text" name = "flight_num" placeholder = "Flight Number"></br>
-       <input type = "text" name = "dep_airport_code" placeholder = "Departure Airport Code"/><br>
-       <input type = "text" name = "arrive_airport_code" placeholder = "Arrival Airport Code"/>
-       </br>
        </br> 
        <input type = "submit" value = "Search" /></br>
    </form>
+
+
+
+
+   <table style="width:100%">
+   Flights over next 30 days
+   <th>Airline Name                </th>
+   <th>Flight Number</th>
+   <th>Depart Date Time</th>
+   <th>Arrive Date Time</th>
+   <th>Base Price</th>
+   <th>Status</th>
+   <th>Depart Airport Code</th>
+   <th>Arrive Airport Code</th>
+   <th>Airplane ID</th>
+   </table>
+
+
+   <table style="width:100%">
+
+   {% for line in data %}
+       <tr>
+           <td>{{line['airline_name']}}</td>
+           <td>{{line['flight_num']}}</td>
+           <td>{{line['depart_date_time']}}</td>
+           <td>{{line['arrive_date_time']}}</td>
+           <td>{{line['base_price']}}</td>
+           <td>{{line['status']}}</td>
+           <td>{{line['depart_airport_code']}}</td>
+           <td>{{line['arrive_airport_code']}}</td>
+           <td>{{line['airplane_id']}}</td>
+        </tr>
+        {% endfor %}
+
+    </table>
+
+
+           
+    
+
+
 </body>
 </html>

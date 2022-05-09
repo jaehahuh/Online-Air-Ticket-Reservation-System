@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Reports By Travel Class</title>
+</head>
+<body>
+	<h1>Reports By Travel Class</h1>
+	<table>
+
+Revenue
+{% for row in revenue %}
+          
+		<tr>
+			<td>${{row['rev']}}</td>
+		</tr>
+{% endfor %}
+</table><br>
+
+To See Reports, Enter Travel Class
+<form action="/ViewRevByTravelClass" method="post">
+	<input type = "text" name = "travel_class" placeholder = "Travel Class"/><br>
+	<input type = "submit" value = "Search" /><br>
+</form>
+</body>
+</html>

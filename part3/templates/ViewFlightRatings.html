@@ -10,19 +10,22 @@
 		<th>Airline Name</th>
 		<th>Flight Number</th>
 		<th>Average Rating</th>
+		<th>Comments</th>
 
-{% for row in average %}
+{% for row in data %}
 		<tr>
 			<td>{{row['airline_name']}}</td>
 			<td>{{row['flight_num']}}</td>
-			<td>{{row['rating']}}/5</td>
+			<td>{{row['rating']}}</td>
+			<td>{{row['comments']}}</td>
 		</tr>
 {% endfor %}
 </table><br>
 
 To review a flight, enter flight
 <form action="/ViewFlightRatings" method="post">
-	<input type = "text" name = "flight_num" placeholder = "flight number"/><br>
+	<input type = "text" name = "airline_name" placeholder = "Airline Name"/><br>
+	<input type = "text" name = "flight_num" placeholder = "Flight Number"/><br>
     <input type = "submit" value = "Search" /><br>
 </form><br>
 </form>
