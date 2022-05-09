@@ -49,6 +49,33 @@
         {% endfor %}
 
     </table>
+
+    <h1>Customers on Flight</h1> 
+    <form action="/StaffFlightView" method="post">
+        Enter Airline Name
+        </br>
+        </br> 
+        <input type = "text" name = "flight_num" placeholder = "flight_num"/><br>
+        </br> 
+        <input type = "submit" value = "Search" /></br>
+    </form>
+
+    <table style="width:100%">
+        Flights over next 30 days
+        <th>Customers</th>
+        
+        </table>
+     
+     
+        <table style="width:100%">
+     
+        {% for line in departing %}
+            <tr>
+                <td>There are {{departing['customers']}} on departing flight {{departing['flight_num']}} to {{departing['depart_airport_code']}}</td>
+             </tr>
+             {% endfor %}
+     
+         </table>
            
     <br><a href = "/StaffHome"><button>Back to Home</button></a>
 
