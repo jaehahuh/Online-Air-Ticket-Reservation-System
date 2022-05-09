@@ -553,7 +553,6 @@ def GoToAirplane():
 @app.route('/AddAirplane', methods = ["GET", "POST"])
 def AddAirplane():
 	if confirmstaff():
-		print('Our request.form looks like: ', request.form)
 		cursor = conn.cursor()
 		create = "INSERT into airplane VALUES (%s, %s, %s, %s, %s)"
 		cursor.execute(create, (request.form['id'], request.form['airline_name'], request.form['num_of_seats'], request.form['manufacturing_comp'], request.form['age_of_airplane']))
@@ -577,9 +576,7 @@ def AddAirport():
 		create = "INSERT into airport VALUES(%s, %s, %s, %s, %s)"
 		cursor.execute(create, (request.form['code'], request.form['airport_name'], request.form['city'],
 		request.form['country'], request.form['airport_type']))
-		conn.commit()
-		data = cursor.fetchall()
-		airports = "SELECT * FROM airport" 
+		conn.commit() 
 		cursor.close()
 		return redirect("/StaffHome")
 	else:
